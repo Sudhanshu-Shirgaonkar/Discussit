@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/side_menu.css' %}" />
+{% endblock head %}
+{% block title %} {% endblock title %}
+
+{% block body %}
+
+<div class="d-flex justify-content-center">
+    <div>
+
+        <div>
+            <nav id="myTab" class="nav nav-pills flex-column flex-sm-row mt-5">
+                <a class="flex-sm-fill text-sm-center nav-link" aria-current="page" href="{% url 'user:group-member-in' request.user.slug %}">Groups You Belong To</a>
+                <a class="flex-sm-fill text-sm-center nav-link active" href="{% url 'user:my-groups' request.user.slug %}">Groups that you handle {% if group_requests %} <span class="badge bg-danger rounded-pill">{{group_requests.count}}</span>{% endif  %}</a>
+            </nav>
+
+            <div class="d-flex justify-content-center mt-3">
+                {% if not groups %}
+                <h3 class="text-muted mt-5">You are not moderator or admin in any Group!!</h3>
+                {% endif %}
+            </div>
+   
+            {% if groups %}
+            <div>
+                <b>Groups that you handle</b>
+            </div>
+
+            <div>
+
+                <div class="d-flex justify-content-center mt-4 mb-3 ">
+                    <div class="card shadow-sm" style="width: 40rem; max-height: 500px;">
+                        <div class="card-body">
+                            <table class="table  table-hover table">
+
+                                <tr>
+
+                                    <th>Group Name</th>
+                                    <th>Role </th>
+                                   
+                                </tr>
+                                {% for row in groups %}
+                                <tr>
+
+                                    <td>
+                                        <div class="d-flex">
+                                        <div class="me-4">
+                                            <img src="{{row.group_picture.url}}" alt="Group picture"
+                                                class="img-fluid rounded-circle border border-dark border-3"
+                                                style="width: 30px; min-width: 30px; height: 30px; min-height: 30px;">
+                                        </div>
+                                        <div >
+                                            <a class="text-decoration-none text-dark"
+                                                href="{% url 'group:group' row.slug %}"><b class="me-3"
+                                                    style="margin-left: -15px;">g/{{row.name}}</b> </a>
+
+                                        </div>
+                                    </div>
+                                    </td>
+                                    <td>{% if request.user in row.admins.all %}Admin{% else %}Moderator{% endif %}</td>
+
+                                </tr>
+                                {% endfor %}
+
+
+                            </table>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+
+
+           
+            {% if group_requests %}
+            <hr>
+            <div>
+                <b>Groups Requests</b>
+            </div>
+
+            <div>
+
+                <div class="d-flex justify-content-center mt-4 mb-3 ">
+                    <div class="card shadow-sm" style="width: 40rem; max-height: 500px;">
+                        <div class="card-body">
+                            <table class="table  table-hover table">
+
+                                <tr>
+
+                                    <th>Group Name</th>
+                                    <th>Role Request</th>
+                                    <th>Action</th>
+                                </tr>
+                                {% for row in group_requests %}
+                                <tr>
+
+                                    <td>
+                                        <div class="d-flex">
+                                        <div class="me-4">
+                                            <img src="{{row.group_picture.url}}" alt="Group picture"
+                                                class="img-fluid rounded-circle border border-dark border-3"
+                                                style="width: 30px; min-width: 30px; height: 30px; min-height: 30px;">
+                                        </div>
+                                        <div >
+                                            <a class="text-decoration-none text-dark"
+                                                href="{% url 'group:group' row.slug %}"><b class="me-3"
+                                                    style="margin-left: -15px;">g/{{row.name}}</b> </a>
+
+                                        </div>
+                                    </div>
+                                    </td>
+                                    <td>{% if request.user in row.admins_request.all %}Admin{% else %}Moderator{% endif %}</td>
+
+                                    <td>
+
+                                        <div class="d-flex">
+
+                                            
+                                        <form method="POST">
+                                            {% csrf_token %}
+                                            <input type="text" name="group" value="{{row.id}}" hidden />
+                                            <div class="d-flex">
+
+
+
+                                                <button class="btn btn-dark me-3" name="accept"
+                                                    type="submit">Accept</button>
+
+                                                    <button class="btn btn-light" name="cancel"
+                                                    type="submit">Cancel</button>
+                                            </div>
+                                        </form>
+
+                                    </div>
+
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+
+                            </table>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

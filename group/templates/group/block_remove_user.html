@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+
+{% endblock head %}
+{% block title %} {% endblock title %}
+
+{% block body %}
+{% for field, error in form.errors.items %}
+<div id="registerAlert" class="alert alert-danger alert-dismissible fade show alert-register" role="alert">
+    {{ error|striptags }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
+<div class="mt-3">
+    <h5>
+    <a class="text-decoration-none" href="{% url 'group:group' group.slug %}">
+      Go Back to g/{{group.name}}
+    </a></h5>
+  </div>
+
+<div class="container">
+    <div class="row">
+        <div class="col md-12"></div>
+        <div class="jumbotron p-3 bg-light">
+
+            <nav class="nav nav-pills flex-column flex-sm-row">
+                <a class="flex-sm-fill text-sm-center nav-link " aria-current="page" href="{% url 'group:admin_mod' group.slug %}">Admin &
+                    Moderator</a>
+                <a class="flex-sm-fill text-sm-center nav-link" href="{% url 'group:approve-user' group.slug %}">Approve Users</a>
+                <a class="flex-sm-fill text-sm-center nav-link active" href="{% url 'group:block-remove' group.slug %}" >Block or Remove Member</a>
+
+            </nav>
+
+            <div class=" my-3">
+                <form method="post">
+                    <h5>Remove or Block User</h5>
+                    {% csrf_token %}
+
+                    <div class=" d-flex ">
+
+                        <div class="me-3">
+                            <label>Add Username:</label>
+                            <input type="text" class="form-control" name="user">
+                        </div>
+
+                        <div class="me-3">
+                            <label class="me-2">Chose Action</label>
+                            <select class="form-control  me-3" name="choice">
+                                <option value="remove">Remove</option>
+                                <option value="block">Block</option>
+                            </select>
+                        </div>
+
+                        <div class="mt-4">
+                            <button class="btn btn-info" name="block" type="submit">Confirm</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+            <table class="table  table-hover ">
+
+                <tr>
+
+                    <th>Blocked Users</th>
+             
+                    <th>ACTION</th>
+                </tr>
+                {% for row in blocked %}
+                <tr>
+
+                    <td >
+                        <div class="d-flex">
+                        <div class="me-4">
+                            <img src="{{row.profile_picture.url}}" alt="Group picture"
+                                class="img-fluid rounded-circle border border-dark border-3"
+                                style="width: 30px; min-width: 30px; height: 30px; min-height: 30px;">
+                        </div>
+                        <div >
+                            <a class="text-decoration-none text-dark"
+                                href="{% url 'user:user' row.slug %}"><b 
+                                    style="margin-left: -15px;">u/{{row.username}}</b> </a>
+    
+                        </div>
+                    </div>
+                    </td>
+          
+
+                    <td>
+
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="text" name="user" value="{{row.id}}" hidden />
+                            <div class="d-flex">
+
+                                <select class="form-control w-25  me-3" name="select">
+                                    <option value="value1">Chose Action</option>
+
+                                    <option value="unblock">Unblock</option>
+                                  
+                                </select>
+
+
+                                <button class="btn btn-info" name="handleblock" type="submit">Perform Action</button>
+                            </div>
+                        </form>
+
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
+
+
+    </div>
+</div>
+
+
+
+
+
+{% endblock body %}

@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block head %}
+
+<link rel="stylesheet" href="{% static 'styles/side_menu.css' %}" />
+{% endblock head %}
+{% block title %} {% endblock title %}
+
+{% block body %}
+
+<div class="home" style="max-height: 100vh;">
+
+  <div style="width: 500px;">
+    <div class=" position-fixed  shadow" style="width: 31rem; height: 100vh;">
+      <div class="overflow-auto " style="height: 400px;">
+
+        <div class="w-100 shadow-sm d-flex" style="height: 60px; background-color: #FAF9F6;">
+          <div >
+            <img
+              src="{{request.user.profile_picture.url}}"
+              alt="Generic placeholder image" class="img-fluid rounded-circle border border-dark border-3 ms-3 mt-2"
+              style="width: 45px;min-width: 45px; height: 45px; min-height: 45px;">
+
+          </div>
+
+          <div class="ms-3 mt-3">
+            <h5>{{request.user.username}}</h5>
+          </div>
+
+          <div class=" w-100 me-3 mt-3 d-flex justify-content-end">
+            <h2>
+          <a role="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"> <span class="material-icons " style="color: orangered;">
+             <h3> person_add</h3>
+              </span></a>
+            </h2>
+          </div>
+
+          
+        </div>
+
+        <div>
+          <ul class="list-group list-group-flush">
+            {% for chatroom in chatrooms %}
+        
+            {% with chatroom_id=request.GET.chatroom %}
+            <a onclick="openChatRoom(event, '{{chatroom.id}}')">
+              <li class="list-group-item {% if chatroom.id|stringformat:'i' == chatroom_id %}active{% endif %}">
+                <div class="row align-items-start">
+                  <div class="col-2">
+                    <img
+                      src="{{chatroom.other_member.profile_picture.url}}"
+                      alt="Generic placeholder image"
+                      class="img-fluid rounded-circle border border-dark border-3 ms-2 mt-2"
+                      style="width: 45px;min-width: 45px; height: 45px; min-height: 45px;">
+                  </div>
+                  <div class="col-10">
+                    <div class="row no-gutters no-padding" style="height: 12px;">
+                      <div class="col-7">
+                        <h6>
+                          {{chatroom.other_member.username}}
+                        </h6>
+                      </div>
+                      <div class="col-5">
+                        <small>{{ chatroom.latest_message.timestamp|naturaltime}}</small>
+                        
+                        <div class=" d-flex justify-content-end">
+                          {% if chatroom.unread %}
+                        <span class="badge bg-danger rounded-pill">{{ chatroom.unread }}</span>
+                        {% endif %}
+                      </div>
+                        </div>
+                    </div>
+                    <div class="row  no-gutters no-padding">
+                      <div class="no-gutters mt no-padding">
+                        <p class="mt-2 {% if chatroom.id|stringformat:'i' == chatroom_id %}text-white{% endif %}" >
+                          {{chatroom.latest_message.content|truncatechars:30 }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </a>
+            
+            {% endwith %}
+         
+            {% endfor %}
+            
+        </div>
+
+      </div>
+
+
+    </div>
+  </div>
+  {%  if request.GET.chatroom %}
+  <div>
+    <div class=" border border-3 d-flex " style="height: 60px;background-color: #D7BDE2;">
+      <div class="">
+        <img
+          src="{{other_user.profile_picture.url}}"
+          alt="Generic placeholder image" class="img-fluid rounded-circle border border-dark border-3 ms-1 mt-1"
+          style="width: 45px;min-width: 45px; height: 45px; min-height: 45px;">
+
+      </div>
+
+      <div class="mt-2 ms-2">
+       <a class="text-decoration-none text-dark" href="{% url 'user:user' other_user.slug %}"> <h5>{{other_user.username}}</h5></a>
+      </div>
+    </div>
+
+    <div>
+
+      
+
+      <div style="height: 72vh; position: relative; ">
+        <div id = "messages"></div>
+        <div id="chatbox" class=" w-100 overflow-auto px-4 " style="position: absolute; bottom: 0; max-height: 100%;">
+    
+        </div>
+
+
+      </div>
+
+     
+
+
+
+
+      <div class="mb-3">
+        <form id="form" method="post">
+          {% csrf_token %}
+          <div class="mx-2 mb-3 row align-items-center" style="height: 50px;">
+            <div class="col-11">
+              {{form.content}}
+            </div>
+            <button class="btn btn-primary col-1">
+              Send
+            </button>
+          </div>
+        </form>
+      </div>
+
+
+  </div>
+
+  {% endif %}
+
+
+  {% include 'chat/modals.html' %}
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/4.0.2/autosize.min.js"></script>
+<script>
+    autosize(document.querySelectorAll('.autosize'));
+  
+    var chatWindow = document.querySelector("#chatbox");
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+    chatWindow.addEventListener("DOMSubtreeModified", function() {
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  });
+</script>
+<script>
+  function openChatRoom(event, otherMember) {
+    event.preventDefault();
+    const url = new URL(window.location.href);
+    url.searchParams.set('chatroom', otherMember);
+    window.location.replace(url);
+  }
+</script>
+
+<script>
+  let chatroomId = new URLSearchParams(window.location.search).get('chatroom');
+  let url = `ws://${window.location.host}/ws/chat/${chatroomId}/`;
+  console.log(url);
+  const chatSocket = new WebSocket(url);
+
+
+  chatSocket.onmessage = function (e) {
+  let data = JSON.parse(e.data);
+
+  // Handle the received message here
+  console.log(data)
+  const messageContainer = document.getElementById('chatbox');
+  const timestamp = new Date(data.timestamp).toLocaleString();
+  let html = '';
+  if (data.sender == '{{request.user.username}}') {
+  html += `
+  <div class="bottom-left">
+      <div class="d-flex justify-content-end">
+        <p class="small me-3 mb-1 text-muted">${data.time}</p>
+      </div>
+      <div class="d-flex flex-row justify-content-end mb-4 pt-1 position-relative">
+   <div class="me-3 mb-3" style="max-width: 40%">
+  <div class="dropdown dropup">
+    <div class="small p-2 text-white rounded-3 bg-info position-relative" data-bs-toggle="dropdown" aria-expanded="false">
+      ${data.message}
+    </div>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+      <a class="dropdown-item"  href="/chat/delete_message/${data.id}">Unsend</a>
+
+    </div>
+  </div>
+</div>
+      </div>
+    </div>
+  `;
+} else {
+  html += `
+    <div class="w-100 overflow-auto px-4" style="max-height: 100%;">
+      <div class="d-flex justify-content-between">
+        <p class="small ms-3 mb-1 text-muted">${data.time}</p>
+      </div>
+      <div class="d-flex justify-content-start">
+        <div style="max-width: 40%;">
+          <p class="small p-2 ms-3 mb-3 rounded-3 position-relative" style="background-color: #f5f6f7;">${data.message}
+   
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+
+  messageContainer.insertAdjacentHTML('beforeend', html);
+};
+
+
+function deleteMessage(id) {
+  const url = "{% url 'chat:delete_message' 0 %}".replace("0", id);
+  fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+  })
+  .then(response => {
+    if (response.ok) {
+      // Reload the page to show updated messages
+      window.location.reload();
+    } else {
+      console.error('Error deleting message');
+    }
+  })
+  .catch(error => console.error(error));
+}
+
+
+  let form = document.getElementById('form');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let message = e.target.content.value;
+    chatSocket.send(JSON.stringify({
+      'message': message
+    }));
+    console.log(message)
+    form.reset();
+  });
+</script>
+
+
+{% endblock body %}

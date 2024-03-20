@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/side_menu.css' %}" />
+{% endblock head %}
+{% block title %} {% endblock title %}
+
+{% block body %}
+<div class="home ">
+  {% include 'side_menu.html' %}
+
+  <div class="" style="background-color: #dae0e6; min-height: 100vh;">
+
+    <div class="d-flex justify-content-center">
+      <div class="m-1 card shadow-sm" style="height: 350px; width: 95%;">
+        <div class="d-flex justify-content-center">
+          <div class="img s" style="background-color: silver;">
+            <img src="{{group.cover_picture.url}}" alt="Generic placeholder image" class=" border-dark border-3"
+              style=" min-height: 250px; min-width: 1080px;  max-height: 250px; max-width: 1080px;">
+          </div>
+        </div>
+        <div>
+          <div class="row mt-2 ms-3">
+            <div class="col-1">
+              <img src="{{group.group_picture.url}}" alt="Generic placeholder image"
+                class="img-fluid rounded-circle border border-dark border-2"
+                style="width: 60px;min-width: 60px; height: 60px; min-height: 60px;">
+            </div>
+            <div class="col-3   mt-2">
+              <div class="row">
+                <h3 style="margin-left: -25px;">{{group.name}}</h3>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <p style="margin-left: -25px;">{{group.group_type}} Group</p>
+                </div>
+                <div class="col-6 ">
+                  <p style="margin-left: -50px;">{{ group.member.all.count }} Members</p>
+                </div>
+              </div>
+            </div>
+            {% if request.user in group.member.all %}
+            <div class="col-6 mt-2">
+              <form method="POST" action="{% url 'group:group_leave' group.slug %}">
+                {% csrf_token %}
+                <input type="hidden" name="group_slug" value="{{ group.slug }}">
+                <button type="submit" class="btn btn-outline-info ">Joined</button>
+              </form>
+            </div>
+            {% elif request.user not in group.member.all and request.user not in group.approval.all %}
+            <div class="col-6 mt-2">
+              <form method="POST" action="{% url 'group:group_join' group.slug %}">
+                {% csrf_token %}
+                <input type="hidden" name="group_slug" value="{{ group.slug }}">
+                <button type="submit" class="btn btn-primary text-white">Join</button>
+              </form>
+            </div>
+            {% elif request.user in group.approval.all %}
+            <div class="col-6 mt-2">
+              <form method="POST" action="{% url 'group:group_leave' group.slug %}">
+                {% csrf_token %}
+                <input type="hidden" name="group_slug" value="{{ group.slug }}">
+                <button type="submit" class="btn btn-primary text-white">Waiting For Approval</button>
+              </form>
+            </div>
+            {% endif %}
+            <div class="position-absolute bottom-0 end-0 mb-3 me-3 d-flex justify-content-end">
+              <button class="btn btn-success" data-toggle="modal" data-target="#adminmodchat">Contact group admins or
+                moderator</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% include 'group/contact.html' %}
+
+
+    </div>
+
+    <div class="mb-5" id="area">
+
+      <div>
+
+        <div class="container my-5">
+            <div class="row justify-content-center">
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-body">
+           
+                    <p class="card-text">This is Private Group.You need to be a member to interact and view the content of this group.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+      </div>
+
+      <!-- right side -->
+
+      <div class="mt-5 ">
+      
+
+        <div class="card mb-3 mt-3" style="width: 18rem;">
+          <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-body-secondary">About</h6>
+            <div class="row mt-1">
+              <p>{{group.description}}</p>
+            </div>
+
+          </div>
+        </div>
+
+
+
+        {% if related_groups %}
+      <div class="card mt-3" style="width: 18rem;">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-body-secondary">Related Groups</h6>
+
+          {% for top in related_groups %}
+        <a class="text-decoration-none text-dark" href="{% url 'group:group' top.slug %}"> <div class="row mt-2">
+            <div class="col-2 ">
+              {{forloop.counter}}
+            </div>
+            <div class="col-2">
+              <img
+                src="{{top.group_picture.url}}"
+                alt="Generic placeholder image" class="img-fluid rounded-circle border border-dark border-3"
+                style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+            </div>
+            <div class="col-8" style="margin-left: -10px;">
+              <h6>g/{{top.name}}</h6>
+            </div>
+          </div></a> 
+
+          {% endfor %}
+
+      
+        
+
+
+
+         <a class="text-decoration-none text-dark" href="{% url 'index:groups' %}"> <h6 class="text-muted mt-2">All.</h6></a>
+
+        </div>
+      </div>
+      {% endif %}
+
+
+
+      </div>
+      <!-- end right side -->
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock body %}

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+
+{% endblock head %}
+{% block title %} {% endblock title %}
+
+{% block body %}
+
+
+<div class="container">
+  <div class="row mt-5">
+    <div class="col-md-4 offset-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h4>Edit Profile</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group text-center">
+              <div class="mb-3">
+                <img src="{{user.profile_picture.url}}" alt="Generic placeholder image"
+                  class="shadow img-fluid rounded-circle border border-dark border-3"
+                  style="width: 110px;min-width: 120px; height: 120px; min-height: 110px;">
+              </div>
+              {{form.profile_pic}}
+            </div>
+            <hr>
+
+
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" name="username" value="{{ user.username }}" disabled>
+            </div>
+
+              <br>
+            {{form.email.label}}:
+            {{form.email}}
+           
+
+
+            <div>
+            
+                <div class="form-group mt-3">
+                  <label for="password2">Change Password</label>
+                  <div class="row">
+
+                    <div class="col-9">
+                      <input type="password" class="form-control" name="password2" placeholder="**********" disabled>
+                    </div>
+
+                    <div class="col-3">
+                      <a class="btn btn-primary" href="{% url 'account:password_change' %}" role="button">Change</a>
+
+                    </div>
+
+                  </div>
+                  
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-4">Save Changes</button>
+          </form>
+          
+      
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-danger btn-block mt-4" data-toggle="modal" data-target="#deleteAccountModal">Delete Account</button>
+          </div>
+   
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="modal" id="deleteAccountModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+  
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Account</h5>
+      </div>
+
+      <div class="modal-body">
+        <div class="d-flex justify-content-center align-items-center mb-4">
+          <i class="fas fa-exclamation-triangle fa-4x text-danger">
+          <h4 class="ms-4">Are you sure you want to delete your account? We're sorry to see you go. This action cannot be undone and all your data will be lost</h4>
+        </div></i>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a role="button" href="{% url 'account:delete-account' user.slug %}" class="btn btn-danger">Confirm Delete</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock body %}

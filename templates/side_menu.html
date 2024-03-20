@@ -1,0 +1,137 @@
+
+<div class="d-none d-sm-block" style="width: 289px;">
+    <div class=" position-fixed  shadow" style="width: 18rem; height: 100vh;">
+      <div class="overflow-auto " {% if request.GET.category %} id="category" {% endif %}style="height: 460px;">
+        <div class="ms-3 mt-4">
+          <p class="text-muted">Feeds</p>
+          <a class="text-decoration-none text-dark" href="{% url 'index:index' %}?feed=home"><h6>Home</h6></a>
+          <a class="text-decoration-none text-dark" href="{% url 'index:index' %}"><h6>Popular</h6></a>
+        </div>
+
+          {% if request.user.is_authenticated %}
+
+          {% if recent_groups.all.count > 0 %}
+          
+        <div class="ms-3 mt-4"  >
+          <p class="text-muted">Recent</p>
+          {% for recent in recent_groups.all %}
+          <div class="row " style="width: 100%;">
+          <div  class="col-10">
+          <a class="text-decoration-none text-dark" href="{% url 'group:group' recent.slug %}"><div class="d-flex mt-2">
+            <div>
+              <img src="{{recent.group_picture.url}}" alt="Generic placeholder image"
+              class="img-fluid rounded-circle border border-dark border-3"
+              style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+            </div>
+            <div class="mt-1 ms-2">
+              <h6>g/{{recent.name}}</h6>
+            </div>
+            
+
+          </div></a>
+        </div>
+        <div class="col-2">
+          <a role="button" href="{% url 'remove_group' recent.slug %}" class="btn-close" aria-label="Close"></a>
+        </div>
+      </div>
+       
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <div class="ms-3 mt-3"> 
+          <p class="text-muted">Categories</p>
+          <ul class="nav  nav-pills flex-column mt-3">
+  
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.category == 'Education' %} active text-white {% endif %}"
+                href="{% url 'index:index' %}?category=Education" data-toggle="type" data-tab="post">
+                <b>Education</b>
+              </a>
+            </li>
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.category == 'Entertainment' %} active text-white {% endif %}"
+                href="{% url 'index:index' %}?category=Entertainment" data-toggle="type" data-tab="post">
+                <b>Entertainment</b>
+              </a>
+            </li>
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.category == 'Food' %} active text-white {% endif %}"
+                href="{% url 'index:index' %}?category=Food" data-toggle="type" data-tab="post">
+                <b>Food</b>
+              </a>
+            </li>
+
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.category == 'Gaming' %} active text-white {% endif %}"
+                href="{% url 'index:index' %}?category=Gaming" data-toggle="type" data-tab="post">
+                <b>Gaming</b>
+              </a>
+            </li>
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.category == 'Health and Fitness' %} active text-white {% endif %}"
+                href="{% url 'index:index' %}?category=Health and Fitness" data-toggle="type" data-tab="post">
+                <b>Health and Fitness</b>
+              </a>
+            </li>
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.category == 'Sports' %} active text-white {% endif %}"
+                href="{% url 'index:index' %}?category=Sports" data-toggle="type" data-tab="post">
+                <b>Sports</b>
+              </a>
+            </li>
+
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.category == 'Technology' %} active text-white {% endif %}"
+                href="{% url 'index:index' %}?category=Technology" data-toggle="type" data-tab="post">
+                <b>Technology</b>
+              </a>
+            </li>
+
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.category == 'Travel' %} active text-white {% endif %}"
+                href="{% url 'index:index' %}?category=Travel" data-toggle="type" data-tab="post">
+                <b>Travel</b>
+              </a>
+            </li>
+          </ul>
+
+
+        </div>
+      </div>
+
+        {% if not request.user.is_authenticated %}
+
+      <div class="ms-3 mt-5 ">
+
+        <p>Create an account for disscussing about your favourite topic...</p>
+        <div class="d-flex justify-content-center">
+
+
+          <a role="button" href="{% url 'account:register' %}" class="btn btn-primary w-75 mt-3 ">Sign Up</a>
+        </div>
+
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/4.0.2/autosize.min.js"></script>
+  <script>
+    autosize(document.querySelectorAll('.autosize'));
+  
+    var chatWindow = document.querySelector("#category");
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+    chatWindow.addEventListener("DOMSubtreeModified", function() {
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  });
+</script>

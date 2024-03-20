@@ -1,0 +1,98 @@
+<!-- Modal -->
+<div class="modal fade " id="adminmodchat" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Contact Admin/Moderators of {{group.name}}
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div style="max-height: 600px;" class="modal-body overflow-auto">
+
+                {% if group.admins.all.count == 1  and group.moderator.all.count == 0 and request.user in group.admins.all %}
+              
+                        <h3 class="text-muted">You are only admin here!</h3>
+                   
+                 {% endif %}
+
+
+                 {% if group.moderator.count == 1  and group.admins.all.count == 0  and request.user in group.moderator.all %}
+            
+                     <h3 class="text-muted">You are only moderator here!</h3>
+              
+                {% endif %}
+
+
+                {% if group.admins %}
+
+                {% for admin in group.admins.all %}
+                
+               
+
+                {% if admin != request.user %}
+                <div class=" mt-1 mb-1">
+                    <div class="card shadow-sm " style="width: 100%; max-height: 500px;">
+                        <div class="card-body row">
+                            <div class="col-1">
+                                <img src="{{admin.profile_picture.url}}" alt="Profile picture"
+                                    class="img-fluid rounded-circle border border-dark border-3"
+                                    style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+                            </div>
+                            <div class="col-5">
+                                <a href="{% url 'user:user' admin.slug %}" class="text-decoration-none text-dark">
+                                    <b class="ms-3">u/{{admin.username}}</b>
+                                </a>
+                            </div>
+                            <div class="col-3">
+                                <b class="text-muted">Admin</b>
+                            </div>
+                            <div class="col-3">
+                                <a href="{% url 'chat:start-chat' admin.slug %}" role="button">
+                                    <button class="btn btn-success">Start Chat</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+
+
+                {% if group.moderator %}
+
+                {% for mod in group.moderator.all %}
+                {% if mod != request.user %}
+                <div class=" mt-1 mb-1">
+                    <div class="card shadow-sm overflow-hidden" style="width: 100%; max-height: 500px;">
+                        <div class="card-body row">
+                            <div class="col-1">
+                                <img src="{{mod.profile_picture.url}}" alt="Profile picture"
+                                    class="img-fluid rounded-circle border border-dark border-3"
+                                    style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+
+                            </div>
+                            <div class="col-5">
+                                <a href="{% url 'user:user' mod.slug %}" class="text-decoration-none text-dark"><b
+                                        class="ms-3">u/{{mod.username}}</b></a>
+                            </div>
+                            <div class="col-3">
+                                <b class="text-muted">Moderator</b>
+                            </div>
+                            <div class="col-3">
+                                <a href="{% url 'chat:start-chat' mod.slug %}" role="button"><button
+                                        class="btn btn-success">Start Chat</button></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+</div>

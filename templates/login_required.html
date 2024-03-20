@@ -1,0 +1,22 @@
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+       
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <h5>You need to be logged in to perform this action.</h5>
+        </div>
+        <div class="modal-footer">
+         
+          <a role="button" href="{% url 'account:login' %}" class="btn btn-primary">Login</a>
+          <h5>or</h5>
+          <a role="button" href="{% url 'account:register' %}"  class="btn btn-primary">Register</a>
+        </div>
+      </div>
+    </div>
+  </div>

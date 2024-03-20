@@ -1,0 +1,54 @@
+<!-- Modal -->
+<div class="modal fade" id="exampleModal{{ forloop.counter }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="d-flex justify-content-center mt-4 mb-3 ">
+          <div class="card shadow-sm overflow-auto" style="width: 40rem; max-height: 500px;">
+            <div class="card-body">
+              <div class="row w-100">
+                <div class="col-2">
+                  <img src="{{post.author.profile_picture.url}}" alt="Generic placeholder image"
+                    class="img-fluid rounded-circle border border-dark border-3"
+                    style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+                </div>
+                <div class="col-7">
+                  <a class="text-decoration-none text-dark" href="{% url 'group:group' post.group.slug %}"><b
+                      class="me-3" style="margin-left: -15px;">u/{{post.author.username}}</b> </a>
+                  <a class="text-decoration-none text-dark" href="{% url 'user:user' post.author.slug %}"><small
+                      class="text-muted "> Submitted
+                      {{post.created_at|timesince}} ago</small></a>
+                </div>
+
+                <div class="my-2">
+                  <h5>{{post.title}}</h5>
+                </div>
+                <div class="overflow-auto" style="max-height: 300px;">
+                  <p>{{post.content|safe}}</p>
+
+                </div>
+                <div>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+

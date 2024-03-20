@@ -1,0 +1,444 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/side_menu.css' %}" />
+{% endblock head %}
+{% block title %} {% endblock title %}
+
+{% block body %}
+<div class="home">
+
+    {% include 'side_menu.html' %}
+    <div style="background-color: #dae0e6; min-height: 100vh;">
+
+
+  
+
+            <div>
+
+      
+
+             
+                <div class="d-flex justify-content-center mt-4 mb-3 ">
+                    <div class="card">
+                        <div class="card-body" style="width: 53rem;">
+                            <div class="overflow-hidden" style="width: 53rem; max-height: 600px;">
+
+                
+
+
+
+                                    <div class="card-body">
+                                       <a class="text-decoration-none" href="{% url 'post:post' comment.post.group.slug comment.post.slug %}"><h6>Comment-Reply Thread under {{comment.post.title}}</h6></a> 
+                                        <div class="row w-100 mt-3">
+                                            <div class="col-1">
+                                                <img src="{{comment.author.profile_picture.url}}"
+                                                    alt="Generic placeholder image"
+                                                    class="img-fluid rounded-circle border border-dark border-3"
+                                                    style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+                                            </div>
+                                            <div class="col-9">
+                                                <a class="text-decoration-none text-dark"
+                                                    href="{% url 'user:user' comment.author.slug %}"> <b class="me-3"
+                                                        style="margin-left: -15px;">u/{{comment.author.username}}</b></a>
+        
+                                                <small class="text-muted ">{{comment.created_at|timesince}}</small>
+                                            </div>
+                                            
+                                            {% if request.user == comment.author or request.user in post.group.admins.all or request.user in post.groups.moderator.all %}
+                                            <div class="col-1">
+                                                <div class="dropdown">
+                                                    <span type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                        <span class="material-icons">
+                                                            more_vert
+                                                        </span>
+                                                    </span>
+                                                 
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                        <a class="dropdown-item"
+                                                        href="{%  url 'post:update-comment' slug=comment.post.group.slug slug2=comment.post.slug pk=comment.pk %}">Update</a>
+                                                        
+                                                        <form>
+                                                        <a class="dropdown-item"
+                                                            href="{%  url 'post:delete-comment' comment.id %}">Remove</a>
+                                                            </form>
+        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+        
+                                        <div class=" mt-2">
+                                            <p>{{comment.comment|safe}}</p>
+                                        </div>
+    
+    
+                                        <div>
+                                            <div class="d-inline-flex mt-3">
+                                                <a class="upvote-comment" href="#" data-post-id="{{ comment.pk }}">
+                                                    <h5><span
+                                                            class="material-icons  me-3 {% if request.user in comment.upvotes.all %}text-danger{% else %}text-muted{% endif %}" >thumb_up_alt</span>
+                                                    </h5>
+                                                </a>
+        
+                                                <span id="vote_count{{comment.pk}}" class="text-muted me-3" data-votes-count="{{ comment.get_votes_count }}">{{ comment.get_votes_count}}</span>
+        
+                                                <a class="downvote-comment" href="#" data-post-id="{{ comment.pk }}">
+                                                    <h5><span
+                                                            class="material-icons  me-3 {% if request.user in comment.downvotes.all %}text-danger{% else %}text-muted{% endif %}">thumb_down_alt</span>
+                                                    </h5>
+                                                </a>
+        
+        
+                                               
+                                                    <h6 class="text-muted me-3"><span class="material-icons">reply</span></h6>
+                                                    
+                                                    <a class="text-decoration-none text-dark" href="{% url 'post:reply'  comment.post.group.slug comment.post.slug comment.id %}">
+                                                <span class="text-muted me-3">{{comment.num_replies}} replys</span> </a>
+                                            </div>
+                                        </div>
+    
+                                    </div>
+    
+                            
+
+
+
+
+
+                  
+
+                            </div>
+
+                            <div class="mt-2 mb-5">
+                                <div class="row justify-content-between">
+
+                                    <div class="col-auto d-flex align-items-center">
+                                        <button type="button" class="btn btn-outline-dark"{% if not request.user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#loginRequiredModal" {% elif group.group_type == 'Restricted' and request.user not in group.member.all %} data-toggle="modal" data-target="#RestrictedGroup"{% else %} data-toggle="modal" data-target="#replyModal"{% endif %}>Reply</button>
+                                    </div>
+                                    {% include 'post/reply_modal.html' %}
+                                    {% include 'restricted_group.html' %}
+                              
+                                </div>
+                            </div>
+
+             
+                          
+                            {% for reply in replys %}
+              
+                            <!--Comment Start-->
+                            <div class="card mb-2 ">
+                                <div class="card-body shadow">
+
+                                    <div class="row w-100">
+                                        <div class="col-1">
+                                            <img src="{{reply.author.profile_picture.url}}"
+                                                alt="Generic placeholder image"
+                                                class="img-fluid rounded-circle border border-dark border-3"
+                                                style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+                                        </div>
+                                        <div class="col-9">
+                                            <a class="text-decoration-none text-dark" href="{% url 'user:user' reply.author.slug %}"> <b class="me-3" style="margin-left: -15px;">u/{{reply.author.username}}</b></a>
+                                            <small class="text-muted ">{{reply.created_at|timesince}}</small>
+                                        </div>
+                                        {% if request.user == comment.author or request.user in post.group.admins.all or request.user in post.groups.moderator.all %}
+                                        <div class="col-1">
+                                            <div class="dropdown">
+                                                <span type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                                                    aria-haspopup="true" aria-expanded="false">
+                                                    <span class="material-icons">
+                                                        more_vert
+                                                    </span>
+                                                </span>
+                                             
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a class="dropdown-item"
+                                                    href="{%  url 'post:update-reply' reply.comment.post.group.slug reply.comment.post.slug reply.pk reply.comment.pk  %}">Update</a>
+                                                    
+                                                    <a class="dropdown-item"
+                                                        href="{%  url 'post:delete-reply' reply.id %}">Remove</a>
+    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class=" mt-2">
+                                        <p>{{reply.reply|safe}}</p>
+                                    </div>
+
+
+                                    <div>
+                                        <div class="d-inline-flex mt-3">
+                                            <a  class="upvote-reply" href="#" data-post-id="{{ reply.pk }}">
+                                              <h5><span class="material-icons  me-3 {% if request.user in reply.upvotes.all %}text-danger{% else %}text-muted{% endif %}">thumb_up_alt</span>
+                                              </h5></a>
+                  
+                                            <span id="vote_count{{reply.pk}}"  class="text-muted me-3">{{ reply.get_votes_count}}</span>
+
+                                            <a  class="downvote-reply" href="#" data-post-id="{{ reply.pk }}"><h5><span class="material-icons  me-3 {% if request.user in reply.downvotes.all %}text-danger{% else %}text-muted{% endif %}">thumb_down_alt</span></h5></a>
+
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <!--Comment end-->
+
+                            {% endfor %}
+
+
+
+
+                        </div>
+                    </div>
+
+                </div>
+            
+
+                
+
+
+
+            </div>
+
+
+
+            {% include 'login_required.html' %}
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% csrf_token %}
+
+
+<script>
+    $(document).ready(function () {
+      // Bind a click event listener to the upvote button
+      $('.upvote-reply').click(function (e) {
+  
+        e.preventDefault();
+        const postId = $(this).data('post-id');
+        const voteCountElem = $('.votes-count[data-post-id=' + postId + ']');
+  
+        // Send a POST request to the upvote view using AJAX
+        $.ajax({
+          type: 'POST',
+          url: "{% url 'post:upvote-reply' 0 %}".replace('0', postId),
+          data: { 'post_id': postId },
+          headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+          success: function (response) {
+  
+            const votes = $("#vote_count" + postId).text()
+  
+  
+  
+  
+            if ($('.downvote-reply[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+              if (parseInt(votes) == -1) {
+                const newVotes = parseInt(votes) + 2;
+                $("#vote_count" + postId).text(newVotes)
+              }
+              else {
+                const newVotes = parseInt(votes) + 1;
+                $("#vote_count" + postId).text(newVotes)
+              }
+  
+              ;
+              $('.downvote-reply[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+              $('.upvote-reply[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+            }
+            else if ($('.upvote-reply[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+              const newVotes = parseInt(votes) - 1;
+              $("#vote_count" + postId).text(newVotes);
+              $('.upvote-reply[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+  
+            }
+            else {
+              const newVotes = parseInt(votes) + 1;
+              $("#vote_count" + postId).text(newVotes);
+              $('.upvote-reply[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+            }
+          },
+          error: function (xhr, status, error) {
+            // Handle errors
+          }
+        });
+      });
+  
+      $('.downvote-reply').click(function (e) {
+  
+        e.preventDefault();
+        const postId = $(this).data('post-id');
+        const voteCountElem = $('.votes-count[data-post-id=' + postId + ']');
+  
+        
+        $.ajax({
+          type: 'POST',
+          url: "{% url 'post:downvote-reply' 0 %}".replace('0', postId),
+          data: { 'post_id': postId },
+          headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+          success: function (response) {
+  
+            const votes = $("#vote_count" + postId).text()
+  
+  
+  
+  
+            if ($('.upvote-reply[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+              if (parseInt(votes) == 1) {
+                const newVotes = parseInt(votes) - 2;
+                $("#vote_count" + postId).text(newVotes)
+              }
+              else {
+                const newVotes = parseInt(votes) - 1;
+                $("#vote_count" + postId).text(newVotes)
+              }
+  
+             
+              $('.upvote-reply[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+              $('.downvote-reply[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+            
+            }
+            else if ($('.downvote-reply[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+              const newVotes = parseInt(votes) + 1;
+              $("#vote_count" + postId).text(newVotes);
+              $('.downvote-reply[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+              console.log("reched")
+  
+            }
+            else {
+              const newVotes = parseInt(votes) - 1;
+              $("#vote_count" + postId).text(newVotes);
+              $('.downvote-reply[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+            }
+          },
+          error: function (xhr, status, error) {
+            // Handle errors
+          }
+        });
+      });
+  
+    });
+  
+  
+  </script>
+
+<script>
+  $(document).ready(function () {
+    // Bind a click event listener to the upvote button
+    $('.upvote-comment').click(function (e) {
+
+      e.preventDefault();
+      const postId = $(this).data('post-id');
+      const voteCountElem = $('.votes-count[data-post-id=' + postId + ']');
+
+      // Send a POST request to the upvote view using AJAX
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'post:upvote-comment' 0 %}".replace('0', postId),
+        data: { 'post_id': postId },
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+        success: function (response) {
+
+          const votes = $("#vote_count" + postId).text()
+
+
+
+
+          if ($('.downvote-comment[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+            if (parseInt(votes) == -1) {
+              const newVotes = parseInt(votes) + 2;
+              $("#vote_count" + postId).text(newVotes)
+            }
+            else {
+              const newVotes = parseInt(votes) + 1;
+              $("#vote_count" + postId).text(newVotes)
+            }
+
+            ;
+            $('.downvote-comment[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+            $('.upvote-comment[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+          }
+          else if ($('.upvote-comment[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+            const newVotes = parseInt(votes) - 1;
+            $("#vote_count" + postId).text(newVotes);
+            $('.upvote-comment[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+
+          }
+          else {
+            const newVotes = parseInt(votes) + 1;
+            $("#vote_count" + postId).text(newVotes);
+            $('.upvote-comment[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+          }
+        },
+        error: function (xhr, status, error) {
+          // Handle errors
+        }
+      });
+    });
+
+    $('.downvote-comment').click(function (e) {
+
+      e.preventDefault();
+      const postId = $(this).data('post-id');
+      const voteCountElem = $('.votes-count[data-post-id=' + postId + ']');
+
+      
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'post:downvote-comment' 0 %}".replace('0', postId),
+        data: { 'post_id': postId },
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+        success: function (response) {
+
+          const votes = $("#vote_count" + postId).text()
+
+
+
+
+          if ($('.upvote-comment[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+            if (parseInt(votes) == 1) {
+              const newVotes = parseInt(votes) - 2;
+              $("#vote_count" + postId).text(newVotes)
+            }
+            else {
+              const newVotes = parseInt(votes) - 1;
+              $("#vote_count" + postId).text(newVotes)
+            }
+
+           
+            $('.upvote-comment[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+            $('.downvote-comment[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+          }
+          else if ($('.downvote-comment[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+            const newVotes = parseInt(votes) + 1;
+            $("#vote_count" + postId).text(newVotes);
+            $('.downvote-comment[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+
+          }
+          else {
+            const newVotes = parseInt(votes) - 1;
+            $("#vote_count" + postId).text(newVotes);
+            $('.downvote-comment[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+          }
+        },
+        error: function (xhr, status, error) {
+          // Handle errors
+        }
+      });
+    });
+
+  });
+
+
+</script>
+
+{% endblock body %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %} Login {% endblock %}
+
+{% block body %}
+
+{% for field, error in form.errors.items %}
+<div id="registerAlert" class="alert alert-danger alert-dismissible fade show alert-register" role="alert">
+    {{ error|striptags }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
+
+
+<div class='d-flex justify-content-center mt-5'>
+    <div class="card shadow w-50 mb-3 ">
+        <div class="card-header bg-danger">
+            <div class='d-flex justify-content-center'>
+                <h2 class="text-white">Register</h2>
+            </div>
+            
+          </div>
+        <div class="card-body ">
+            <form method="post">
+                {% csrf_token %}
+
+                {{form.email.label}}:
+                {{form.email}}
+                <br>
+
+
+                {{form.username.label}}:
+                {{form.username}}
+                <br>
+
+
+                {{form.password1.label}}:
+                {{form.password1}}
+                
+                <br>
+
+                {{form.password2.label}}:
+                {{form.password2}}
+                <br>
+
+
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+
+
+
+            <p class="mt-3"><a  href="{% url 'account:login' %}" class="link-underline-light text-decoration-none">Already have an account? Please Login here.</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,481 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+
+{% endblock head %}
+{% block title %} {% endblock title %}
+
+{% block body %}
+<div class="home">
+
+  {% include 'side_menu.html' %}
+
+  <div id="area" style="background-color: #dae0e6; min-height: 100vh; ">
+
+    <div class=" ">
+
+
+      <div class="d-flex justify-content-center mt-3">
+        <div>
+          {% if request.GET.category %}
+          <b>Posts related to {{request.GET.category}}</b>
+          {% endif %}
+          {% if not request.GET.feed and not request.GET.category %}
+
+          {% if request.GET.sortby != 'new' %}
+          <b>Popular posts</b>
+          {% endif %}
+
+
+
+          <div class="card p-3 shadow-sm mt-2" style="width: 40rem;">
+
+            <ul id="myTab" class="nav nav-tabs">
+              <li class="nav-item">
+                <a class="nav-link text-dark {% if not request.GET.sortby == 'new' or request.GET.type == 'top'  %} active  {% endif %}"
+                  href="{% url 'index:index' %}" data-toggle="sortby" data-tab="top">Top</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-dark  {% if request.GET.sortby == 'new'  %} active  {% endif %}" href="#new"
+                  data-toggle="sortby" data-tab="new">New</a>
+              </li>
+
+            </ul>
+          </div>
+          {% endif %}
+          {% if not posts and request.GET.feed == 'home' %}
+
+          <h1 class="text-muted">You are not in any group</h1>
+
+          {% endif %}
+
+          {% if not posts and request.GET.category %}
+
+          <h1 class="text-muted">This category Dont have any Posts</h1>
+
+          {% endif %}
+
+        </div>
+      </div>
+
+
+      {% for post in posts %}
+
+      <div class="Posts">
+
+        {% if post.is_image_based %}
+        <div class="d-flex justify-content-center mt-4 mb-3 ">
+          <div class="card shadow-sm overflow-hidden" style="width: 40rem; max-height: 500px;">
+            <div class="card-body">
+              <div class="row w-100">
+                <div class="col-1">
+                  <img src="{{post.group.group_picture.url}}" alt="Generic placeholder image"
+                    class="img-fluid rounded-circle border border-dark border-3"
+                    style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+                </div>
+                <div class="col-10">
+                  <a class="text-decoration-none text-dark" href="{% url 'group:group' post.group.slug %}"><b
+                    class="me-3" style="margin-left: -15px;">g/{{post.group.name}}</b> </a>
+                  <small class="text-muted ">Posted by <a class="text-decoration-none text-dark"
+                      href="{% url 'user:user' post.author.slug %}">@{{post.author.username}}
+                    </a>{{post.created_at|timesince}}</small>
+                </div>
+
+              </div>
+              <a class="text-decoration-none text-dark" href="{% url 'post:post' post.group.slug post.slug  %}">
+                <div class="my-2">
+                  <h5>{{post.title}}</h5>
+                </div>
+                <div class="d-flex justify-content-center mt-2">
+                  <img src="{{post.image.url}}" alt="Generic placeholder image"
+                    class="img-fluid  border border-dark border-3 me-2 "
+                    style="min-width: 300px; max-width: 560px;  min-height: 200px; max-height: 350px; ">
+                </div>
+              </a>
+              <div>
+                <div class="d-inline-flex mt-3">
+
+
+                  <a {% if not request.user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#loginRequiredModal" {% else %} class="upvote"{%endif%}href="#" data-post-id="{{ post.pk }}">
+                    <h5><span
+                        class="material-icons  me-3 {% if request.user in post.upvotes.all %}text-danger{% else %}text-muted{% endif %}"
+                        data-votes-count="{{ post.get_votes_count }}">thumb_up_alt</span>
+                    </h5>
+                  </a>
+                  <span id="vote_count{{post.pk}}" class="text-muted me-3">{{ post.get_votes_count }}</span>
+
+                  <a {% if not request.user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#loginRequiredModal" {% else %} class="downvote"{%endif%} data-post-id="{{ post.pk }}" href="#">
+                    <h5>
+                      <span
+                        class="material-icons   me-3  {% if request.user in post.downvotes.all %}text-danger{% else %}text-muted{% endif %}">thumb_down_alt</span>
+                    </h5>
+                  </a>
+
+
+                  <h6 class=" text-muted me-3"><span class="material-icons">chat</span></h6>
+                        <a href="{% url 'post:post' post.group.slug post.slug %}" class="text-decoration-none"><span
+                            class="text-muted me-3">{{post.comment_count}} comments</span></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% endif %}
+
+
+
+
+        {% if post.is_text_based %}
+        <div class="d-flex justify-content-center mt-4 mb-3 ">
+          <div class="card shadow-sm overflow-hidden" style="width: 40rem; max-height: 500px;">
+            <div class="card-body">
+              <div class="row w-100">
+                <div class="col-1">
+                  <img src="{{post.group.group_picture.url}}" alt="Generic placeholder image"
+                    class="img-fluid rounded-circle border border-dark border-3"
+                    style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+                </div>
+                <div class="col-10">
+                  <a class="text-decoration-none text-dark" href="{% url 'group:group' post.group.slug %}"><b
+                      class="me-3" style="margin-left: -15px;">g/{{post.group.name}}</b> </a>
+                  <a class="text-decoration-none text-dark" href="{% url 'user:user' post.author.slug %}"><small
+                      class="text-muted ">Posted by @{{post.author.username}} {{post.created_at|timesince}}</small></a>
+                </div>
+
+              </div>
+
+              <a class="text-decoration-none text-dark" href="{% url 'post:post'  post.group.slug post.slug  %}">
+
+                <div class="my-2">
+                  <h5>{{post.title}}</h5>
+                </div>
+                <div class="overflow-hidden" style="max-height: 300px;">
+                  <p>{{post.content|safe}}</p>
+
+                </div>
+
+              </a>
+              <div>
+                <div class="d-inline-flex mt-3">
+
+
+                  <a {% if not request.user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#loginRequiredModal" {% else %} class="upvote"{%endif%} href="#" data-post-id="{{ post.pk }}">
+                    <h5><span
+                        class="material-icons  me-3 {% if request.user in post.upvotes.all %}text-danger{% else %}text-muted{% endif %}"
+                        data-votes-count="{{ post.get_votes_count }}">thumb_up_alt</span>
+                    </h5>
+                  </a>
+                  <span id="vote_count{{post.pk}}" class="text-muted me-3">{{ post.get_votes_count }}</span>
+
+                  <a {% if not request.user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#loginRequiredModal" {% else %} class="downvote"{%endif%} data-post-id="{{ post.pk }}" href="#">
+                    <h5>
+                      <span
+                        class="material-icons   me-3  {% if request.user in post.downvotes.all %}text-danger{% else %}text-muted{% endif %}">thumb_down_alt</span>
+                    </h5>
+                  </a>
+
+
+                  <h6 class=" text-muted me-3"><span class="material-icons">chat</span></h6>
+                        <a href="{% url 'post:post' post.group.slug post.slug %}" class="text-decoration-none"><span
+                            class="text-muted me-3">{{post.comment_count}} comments</span></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {% endif %}
+
+
+
+
+        {% if post.is_video_based %}
+
+        <div class="d-flex justify-content-center mt-4 mb-3 ">
+          <div class="card shadow-sm overflow-hidden" style="width: 40rem; max-height: 500px;">
+            <div class="card-body">
+              <div class="row w-100">
+                <div class="col-1">
+                  <img src="{{post.group.group_picture.url}}" alt="Generic placeholder image"
+                    class="img-fluid rounded-circle border border-dark border-3"
+                    style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+                </div>
+                <div class="col-10">
+                  <a class="text-decoration-none text-dark" href="{% url 'group:group' post.group.slug %}"><b
+                      class="me-3" style="margin-left: -15px;">g/{{post.group.name}}</b> </a>
+                  <a class="text-decoration-none text-dark" href="{% url 'user:user' post.author.slug %}"><small
+                      class="text-muted ">Posted by @{{post.author.username}} {{post.created_at|timesince}}</small></a>
+                </div>
+
+              </div>
+              <a class="text-decoration-none text-dark" href="{% url 'post:post' post.group.slug post.slug %}" >
+                <div class="my-2">
+                  <h5>{{post.title}}</h5>
+                </div>
+              </a>
+              <div class="d-flex justify-content-center mt-2" style="width: 600px; background-color: black;">
+                <video class="w-100 video-fluid " controls
+                  style="min-width: 300px; max-width: 560px;  min-height: 200px; max-height: 570px; ">
+                  <source src="{{post.video.url}}" type="video/mp4" />
+                </video>
+
+
+              </div>
+              <div>
+                <div class="d-inline-flex mt-3">
+
+
+                  <a {% if not request.user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#loginRequiredModal" {% else %} class="upvote"{%endif%}  href="#" data-post-id="{{ post.pk }}" >
+                    <h5><span
+                        class="material-icons  me-3 {% if request.user in post.upvotes.all %}text-danger{% else %}text-muted{% endif %}"
+                        data-votes-count="{{ post.get_votes_count }}">thumb_up_alt</span>
+                    </h5>
+                  </a>
+                  <span id="vote_count{{post.pk}}" class="text-muted me-3" data-votes-count="{{ post.get_votes_count }}">{{ post.get_votes_count }}</span>
+
+                  <a {% if not request.user.is_authenticated %}data-bs-toggle="modal" data-bs-target="#loginRequiredModal" {% else %} class="downvote"{%endif%}  data-post-id="{{ post.pk }}" href="#">
+                    <h5>
+                      <span
+                        class="material-icons   me-3  {% if request.user in post.downvotes.all %}text-danger{% else %}text-muted{% endif %}">thumb_down_alt</span>
+                    </h5>
+                  </a>
+
+
+                  <h6 class=" text-muted me-3"><span class="material-icons">chat</span></h6>
+                        <a href="{% url 'post:post' post.group.slug post.slug %}" class="text-decoration-none"><span
+                            class="text-muted me-3">{{post.comment_count}} comments</span></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% endif %}
+
+
+
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+    <div class="mt-5">
+
+      <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-body-secondary">Top Groups</h6>
+
+          {% for top in top_groups %}
+          <a class="text-decoration-none text-dark" href="{% url 'group:group' top.slug %}">
+            <div class="row mt-2">
+              <div class="col-2 ">
+                {{forloop.counter}}
+              </div>
+              <div class="col-2">
+                <img src="{{top.group_picture.url}}" alt="Generic placeholder image"
+                  class="img-fluid rounded-circle border border-dark border-3"
+                  style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+              </div>
+              <div class="col-8" style="margin-left: -10px;">
+                <h6>g/{{top.name}}</h6>
+              </div>
+            </div>
+          </a>
+
+          {% endfor %}
+
+
+
+
+
+
+          <a class="text-decoration-none text-dark" href="{% url 'index:groups' %}">
+            <h6 class="text-muted mt-2">All</h6>
+          </a>
+
+        </div>
+      </div>
+
+
+      {% if request.user.is_authenticated  %}
+
+      <div class="card mt-4" style="width: 18rem;">
+        <div class="card-body">
+
+          <div>
+            <a href="{% url 'group:create-group' %}" class="btn btn-outline-dark mt-3">Create New Group</a>
+          </div>
+
+        </div>
+      </div>
+
+      {% endif %}
+    </div>
+
+
+  </div>
+
+
+  {% include 'login_required.html' %}
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% csrf_token %}
+
+
+<script>
+  
+  $(document).ready(function () {
+    // Bind a click event listener to the upvote button
+    $('.upvote').click(function (e) {
+
+      e.preventDefault();
+
+      const postId = $(this).data('post-id');
+      const voteCountElem = $('.votes-count[data-post-id=' + postId + ']');
+
+      // Send a POST request to the upvote view using AJAX
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'post:upvote' 0 %}".replace('0', postId),
+        data: { 'post_id': postId },
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+        success: function (response) {
+
+          const votes = $("#vote_count" + postId).text()
+
+
+
+
+          if ($('.downvote[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+            if (parseInt(votes) == -1) {
+              const newVotes = parseInt(votes) + 2;
+              $("#vote_count" + postId).text(newVotes)
+            }
+            else {
+              const newVotes = parseInt(votes) + 1;
+              $("#vote_count" + postId).text(newVotes)
+            }
+
+            ;
+            $('.downvote[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+            $('.upvote[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+          }
+          else if ($('.upvote[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+            const newVotes = parseInt(votes) - 1;
+            $("#vote_count" + postId).text(newVotes);
+            $('.upvote[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+
+          }
+          else {
+            const newVotes = parseInt(votes) + 1;
+            $("#vote_count" + postId).text(newVotes);
+            $('.upvote[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+          }
+        },
+        error: function (xhr, status, error) {
+          // Handle errors
+        }
+      });
+    });
+
+
+
+
+
+    $('.downvote').click(function (e) {
+
+      e.preventDefault();
+
+
+      const postId = $(this).data('post-id');
+      const voteCountElem = $('.votes-count[data-post-id=' + postId + ']');
+
+      
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'post:downvote' 0 %}".replace('0', postId),
+        data: { 'post_id': postId },
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+        success: function (response) {
+
+          const votes = $("#vote_count" + postId).text()
+
+
+
+
+          if ($('.upvote[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+            if (parseInt(votes) == 1) {
+              const newVotes = parseInt(votes) - 2;
+              $("#vote_count" + postId).text(newVotes)
+            }
+            else {
+              const newVotes = parseInt(votes) - 1;
+              $("#vote_count" + postId).text(newVotes)
+            }
+
+           
+            $('.upvote[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+            $('.downvote[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+          }
+          else if ($('.downvote[data-post-id=' + postId + '] .material-icons').hasClass('text-danger')) {
+            const newVotes = parseInt(votes) + 1;
+            $("#vote_count" + postId).text(newVotes);
+            $('.downvote[data-post-id=' + postId + '] .material-icons').removeClass('text-danger').addClass('text-muted');
+
+          }
+          else {
+            const newVotes = parseInt(votes) - 1;
+            $("#vote_count" + postId).text(newVotes);
+            $('.downvote[data-post-id=' + postId + '] .material-icons').removeClass('text-muted').addClass('text-danger');
+          }
+        },
+        error: function (xhr, status, error) {
+          // Handle errors
+        }
+      });
+    });
+
+
+
+
+
+
+  });
+
+
+</script>
+
+
+
+<script>
+  const tabLinks = document.querySelectorAll('#myTab a');
+  for (const link of tabLinks) {
+    link.addEventListener('click', (event) => {
+      const tab = event.target.dataset.tab;
+      const url = new URL(window.location.href);
+      url.searchParams.set('sortby', tab);
+      window.location.replace(url);
+    });
+  }
+
+  // Check the current tab in the URL and activate it
+  const currentTab = new URLSearchParams(window.location.search).get('tab');
+  if (currentTab) {
+    const activeLink = document.querySelector(`#myTab[data-tab="${currentTab}"]`);
+    if (activeLink) {
+      activeLink.classList.add('active');
+      const activeTab = document.querySelector(`#${currentTab}`);
+      if (activeTab) {
+        activeTab.classList.add('show', 'active');
+      }
+    }
+  }
+</script>
+{% endblock body %}

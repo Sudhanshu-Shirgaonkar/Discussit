@@ -1,0 +1,14 @@
+#db
+db.sqlite3
+
+
+
+# Project-specific files
+static/
+*/migrations/?0*
+.vscode
+media\cover_pics
+media\group_pics
+media\post_images
+media\post_videos
+media\profile_pics

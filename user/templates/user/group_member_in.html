@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/side_menu.css' %}" />
+{% endblock head %}
+{% block title %} {% endblock title %}
+
+{% block body %}
+
+<div class="d-flex justify-content-center">
+    <div>
+
+        <div>
+            <nav id="myTab" class="nav nav-pills flex-column flex-sm-row mt-5">
+                <a class="flex-sm-fill text-sm-center nav-link  active" aria-current="page" href="{% url 'user:group-member-in' request.user.slug %}">Groups You Belong To</a>
+                <a class="flex-sm-fill text-sm-center nav-link" href="{% url 'user:my-groups' request.user.slug %}">Groups that you handle {% if group_requests %} <span class="badge bg-danger rounded-pill">{{group_requests.count}}</span>{% endif  %}</a>
+            </nav>
+
+            <div class="d-flex justify-content-center mt-3">
+                {% if not groups %}
+                <h3 class="text-muted mt-5">You Dont Follow Any Groups</h3>
+                {% endif %}
+            </div>
+   
+            {% if groups %}
+            <div>
+                <b>Groups that you Follow</b>
+            </div>
+
+            <div>
+
+                <div class="d-flex justify-content-center mt-4 mb-3 ">
+                    <div class="card shadow-sm" style="width: 40rem; max-height: 500px;">
+                        <div class="card-body">
+                            <table class="table  table-hover table">
+
+                                {% for row in groups %}
+                                <tr>
+
+                                    <td>
+                                        <div class="d-flex">
+                                        <div class="me-4">
+                                            <img src="{{row.group_picture.url}}" alt="Group picture"
+                                                class="img-fluid rounded-circle border border-dark border-3"
+                                                style="width: 30px; min-width: 30px; height: 30px; min-height: 30px;">
+                                        </div>
+                                        <div >
+                                            <a class="text-decoration-none text-dark"
+                                                href="{% url 'group:group' row.slug %}"><b class="me-3"
+                                                    style="margin-left: -15px;">g/{{row.name}}</b> </a>
+
+                                        </div>
+                                    </div>
+                                    </td>
+                                 
+
+                                </tr>
+                                {% endfor %}
+
+
+                            </table>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+
+
+     
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

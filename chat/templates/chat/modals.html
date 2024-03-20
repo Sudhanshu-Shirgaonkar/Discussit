@@ -1,0 +1,29 @@
+<!-- Modal -->
+<div class="modal fade " id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Finding Chat</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div style="max-height: 600px;"  class="modal-body overflow-auto">
+        
+
+          {% for findchat in findchats %}
+          <div class="d-flex justify-content-center mt-1 mb-1">
+            <div class="card shadow-sm overflow-hidden" style="width: 20rem; max-height: 500px;">
+              <div class="card-body d-flex flex-row justify-content-between align-items-center">
+                <div class="d-flex flex-row align-items-center">
+                  <img src="{{findchat.profile_picture.url}}" alt="Profile picture" class="img-fluid rounded-circle border border-dark border-3" style="width: 30px;min-width: 30px; height: 30px; min-height: 30px;">
+                  <a href="{% url 'user:user' user.slug %}" class="text-decoration-none text-dark"><b class="ms-3">u/{{findchat.username}}</b></a>
+                </div>
+                <a href="{% url 'chat:start-chat' findchat.slug %}" role="button"><button class="btn btn-success">Start Chat</button></a> 
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+  </div>

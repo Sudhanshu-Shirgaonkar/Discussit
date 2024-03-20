@@ -1,0 +1,68 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+
+{% endblock head %}
+{% block title %} {% endblock title %}
+
+{% block body %}
+{% for field, error in form.errors.items %}
+<div id="registerAlert" class="alert alert-danger alert-dismissible fade show alert-register" role="alert">
+    {{ error|striptags }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<div class="mt-3">
+  <h5>
+  <a class="text-decoration-none" href="{% url 'group:group' group.slug %}">
+    Go Back to g/{{group.name}}
+  </a></h5>
+</div>
+
+<div class="container">
+
+  <div class="row mt-5">
+    <div class="col-md-4 offset-md-4">
+      <ul class="nav nav-pills mb-3">
+        <li class="nav-item">
+          <a class="nav-link {% if group.allow_text_posts == False %} disabled {% endif %}"  href="{% url 'post:create-text-post' slug %}">Text-Based</a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link active {% if group.allow_image_posts == False %} disabled {% endif %}" aria-current="page" href="{% url 'post:create-image-post' slug %}">Image-Based</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if group.allow_video_posts == False %} disabled {% endif %}" href="{% url 'post:create-video-post' slug %}">Video-Based</a>
+        </li>
+    
+      </ul>
+      <div class="card">
+
+        <div class="card-header">
+          <h4>Make a Post</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+              
+                {{form.as_p}}
+            <br>
+
+     
+
+            <button type="submit" class="btn btn-primary btn-block mt-4">Save Changes</button>
+          </form>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+{% endblock body %}

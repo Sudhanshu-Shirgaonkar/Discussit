@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/side_menu.css' %}" />
+<style>
+  .active {
+    color: red;
+    background-color: yellow;
+    /* Add any other custom styles here */
+  }
+</style>
+{% endblock head %}
+{% block title %} {% endblock title %}
+
+{% block body %}
+<div class="home">
+
+  <div style="width: 289px;">
+    <div class=" position-fixed  shadow" style="width: 18rem; height: 100vh;">
+      <div style="height: 100vh;">
+
+
+
+
+        <div class="ms-3 mt-3 ">
+          <h5>Categories</h5>
+
+          <ul class="nav  nav-pills flex-column mt-3">
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if not request.GET.q %} active text-white {% endif %}"
+                href="{% url 'index:groups' %}" data-toggle="type" data-tab="post">
+                <b>All</b>
+              </a>
+            </li>
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.q == 'Education' %} active text-white {% endif %}"
+                href="{% url 'index:groups' %}?q=Education" data-toggle="type" data-tab="post">
+                <b>Education</b>
+              </a>
+            </li>
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.q == 'Entertainment' %} active text-white {% endif %}"
+                href="{% url 'index:groups' %}?q=Entertainment" data-toggle="type" data-tab="post">
+                <b>Entertainment</b>
+              </a>
+            </li>
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.q == 'Food' %} active text-white {% endif %}"
+                href="{% url 'index:groups' %}?q=Food" data-toggle="type" data-tab="post">
+                <b>Food</b>
+              </a>
+            </li>
+
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.q == 'Gaming' %} active text-white {% endif %}"
+                href="{% url 'index:groups' %}?q=Gaming" data-toggle="type" data-tab="post">
+                <b>Gaming</b>
+              </a>
+            </li>
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.q == 'Health and Fitness' %} active text-white {% endif %}"
+                href="{% url 'index:groups' %}?q=Health and Fitness" data-toggle="type" data-tab="post">
+                <b>Health and Fitness</b>
+              </a>
+            </li>
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.q == 'Sports' %} active text-white {% endif %}"
+                href="{% url 'index:groups' %}?q=Sports" data-toggle="type" data-tab="post">
+                <b>Sports</b>
+              </a>
+            </li>
+
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.q == 'Technology' %} active text-white {% endif %}"
+                href="{% url 'index:groups' %}?q=Technology" data-toggle="type" data-tab="post">
+                <b>Technology</b>
+              </a>
+            </li>
+
+
+            <li class="nav-item border border-1">
+              <a class="nav-link text-dark {% if request.GET.q == 'Travel' %} active text-white {% endif %}"
+                href="{% url 'index:groups' %}?q=Travel" data-toggle="type" data-tab="post">
+                <b>Travel</b>
+              </a>
+            </li>
+          </ul>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="area" style="background-color: #dae0e6; height: 100vh;">
+
+    <div>
+
+
+
+
+      <div class="d-flex justify-content-center mt-3">
+
+
+
+        <div>
+          {% if not request.GET.q %}
+          <h3>All Groups</h3>
+          {% else %}
+          <h3>{{request.GET.q}}</h3>
+          {% endif %}
+
+        </div>
+      </div>
+      {% if not groups %}
+      <div class="d-flex justify-content-center mt-4 mb-3">
+      <h3 class="text-muted">There are no groups in this category!</h3>
+    </div>
+      {% endif %}
+      {% if groups %}
+
+      <div>
+
+          <div class="d-flex justify-content-center mt-4 mb-3 ">
+              <div class="card shadow-sm" style="width: 40rem; ">
+                  <div class="card-body">
+                      <table class="table  table-hover table">
+
+                     
+                          {% for row in groups %}
+                          <tr>
+
+                              <td>
+                                  <div class="d-flex">
+                                  <div class="me-4">
+                                      <img src="{{row.group_picture.url}}" alt="Group picture"
+                                          class="img-fluid rounded-circle border border-dark border-3"
+                                          style="width: 30px; min-width: 30px; height: 30px; min-height: 30px;">
+                                  </div>
+                                  <div >
+                                      <a class="text-decoration-none text-dark"
+                                          href="{% url 'group:group' row.slug %}"><b class="me-3"
+                                              style="margin-left: -15px;">g/{{row.name}}</b> </a>
+
+                                  </div>
+                              </div>
+                              </td>
+                              
+
+                          </tr>
+                          {% endfor %}
+
+
+                      </table>
+
+                  </div>
+
+              </div>
+          </div>
+
+      </div>
+      {% endif %}
+
+
+    </div>
+
+
+
+  </div>
+
+
+
+
+</div>
+
+
+{% endblock body %}
