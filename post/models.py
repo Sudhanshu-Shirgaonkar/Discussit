@@ -75,7 +75,7 @@ class Post(models.Model):
 class Comment(models.Model):
 
     comment= RichTextField(blank=True)
-    slug = models.CharField(max_length=200,blank=True)
+    slug = models.CharField(max_length=455,blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     post_date = models.DateTimeField(auto_now=True)
     post =  models.ForeignKey(Post, on_delete=models.CASCADE)
