@@ -1,8 +1,26 @@
 
 from pathlib import Path
 from django.contrib.messages import constants as messages
+import dj_database_url
+import os
+import environ
+
+
+
+
+
+
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# Environment Variables
+environ.Env.read_env(BASE_DIR / '.env')
+env = environ.Env(
+    DATABASE_URL=(str, ''),
+)
 
 
 # Quick-start development settings - unsuitable for production
@@ -96,15 +114,20 @@ TEMPLATES = [
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "discussit",
+#         "USER": "postgres",
+#         "PASSWORD":"admin",
+#         "HOST":"localhost",
+#         "PORT":""
+#     }
+# }
+
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "discussit",
-        "USER": "postgres",
-        "PASSWORD":"admin",
-        "HOST":"localhost",
-        "PORT":""
-    }
+    "default": dj_database_url.parse(env('DATABASE_URL'))
 }
 
 
