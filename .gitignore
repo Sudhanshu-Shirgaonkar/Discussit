@@ -144,7 +144,6 @@ GitHub.sublime-settings
 
 
 # Project-specific files
-static/
 */migrations/?0*
 .vscode
 media\cover_pics

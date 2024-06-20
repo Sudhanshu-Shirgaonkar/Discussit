@@ -1,0 +1,13 @@
+.home {
+    display: grid;
+    grid-template-columns: 1fr 11fr;
+}
+
+
+#area {
+    display: grid;
+    grid-template-columns: 9fr 3fr;
+}
+
+
+
