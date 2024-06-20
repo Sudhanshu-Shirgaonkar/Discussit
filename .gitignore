@@ -146,8 +146,8 @@ GitHub.sublime-settings
 # Project-specific files
 */migrations/?0*
 .vscode
-media\cover_pics
-media\group_pics
-media\post_images
-media\post_videos
-media\profile_pics
+# media\cover_pics
+# media\group_pics
+# media\post_images
+# media\post_videos
+# media\profile_pics
